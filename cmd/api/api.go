@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gin-gonic/gin"
 	"github.com/antikytheraton/halucigenia-backend/internal/platform/config"
+	"github.com/antikytheraton/halucigenia-backend/internal/platform/db"
+	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
 )
 
@@ -16,6 +17,12 @@ func Run() int {
 		log.Println("error loading config: %v", err)
 		return 1
 	}
+	sql, err := db.Open(c.Database.URL)
+	if err != nil {
+		log.Printf("error opening database: %v", err)
+		return 1
+	}
+	defer sql.Close()
 
 	router := gin.New()
 	router.Use(gin.Logger())

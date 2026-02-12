@@ -6,7 +6,9 @@ go 1.25.0
 require (
 	github.com/gin-gonic/gin v1.11.0
 	github.com/heroku/x v0.5.2
-	github.com/peterbourgon/ff/v4 v4.0.0-beta.1
+	github.com/lib/pq v1.11.2
+	github.com/peterbourgon/ff/v3 v3.3.2
+	github.com/pkazmier/ffyaml v0.0.0-20230717234647-3763394b8258
 )
 
 require (
@@ -41,4 +43,5 @@ require (
 	golang.org/x/text v0.31.0 // indirect
 	golang.org/x/tools v0.38.0 // indirect
 	google.golang.org/protobuf v1.36.9 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
