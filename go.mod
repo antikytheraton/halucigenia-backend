@@ -1,4 +1,4 @@
-module github.com/heroku/go-getting-started
+module github.com/antikytheraton/halucigenia-backend
 
 // +heroku goVersion go1.25
 go 1.25.0

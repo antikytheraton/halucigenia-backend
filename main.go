@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/heroku/go-getting-started/cmd/api"
+	"github.com/antikytheraton/halucigenia-backend/cmd/api"
 )
 
 func main() {
