@@ -1,12 +1,11 @@
 {
-  "name": "Start on Heroku: Go",
-  "description": "Go Getting Started Example App",
+  "name": "Halucigenia Backend",
+  "description": "Web server API for MyPocket app",
   "keywords": [
     "getting-started",
     "go",
-    "sample",
-    "example"
+    "api"
   ],
   "website": "https://github.com/heroku/go-getting-started",
-  "repository": "https://github.com/heroku/go-getting-started"
+  "repository": "https://github.com/antikytheraton/halucigenia-backend"
 }
