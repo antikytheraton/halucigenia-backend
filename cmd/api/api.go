@@ -4,9 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 
 	_ "github.com/heroku/x/hmetrics/onload"
 
@@ -42,29 +39,23 @@ func Run(args []string) int {
 		WriteTimeout: c.HTTP.WriteTimeout,
 	}
 
-	ctx, stop := signal.NotifyContext(context.Background(),
-		os.Interrupt, syscall.SIGTERM)
-	defer stop()
-
 	go func() {
 		if err = server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Error starting server: %v", err)
 		}
 	}()
-	<-ctx.Done()
 
-	log.Println("Shutting down server...")
+	exitHandler(func() {
+		shutdownCtx, cancel := context.WithTimeout(context.Background(),
+			c.HTTP.GracefulTimeout)
+		defer cancel()
+		if err := server.Shutdown(shutdownCtx); err != nil {
+			log.Fatalf("Error shutting down server: %v", err)
+		}
+		if err = db.Close(); err != nil {
+			log.Fatalf("Error closing database: %v", err)
+		}
+	})
 
-	shutdownCtx, cancel := context.WithTimeout(context.Background(),
-		c.HTTP.GracefulTimeout)
-	defer cancel()
-	if err := server.Shutdown(shutdownCtx); err != nil {
-		log.Printf("Error shutting down server: %v", err)
-		return 1
-	}
-	if err = db.Close(); err != nil {
-		log.Printf("Error closing database: %v", err)
-		return 1
-	}
 	return 0
 }
