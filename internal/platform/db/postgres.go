@@ -8,7 +8,6 @@ import (
 )
 
 func Open(dbURL string) (*sql.DB, error) {
-	log.Printf("Connecting to database: %s", dbURL)
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
 		return nil, err

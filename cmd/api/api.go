@@ -55,7 +55,8 @@ func Run(args []string) int {
 
 	log.Println("Shutting down server...")
 
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), c.HTTP.GracefulTimeout)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(),
+		c.HTTP.GracefulTimeout)
 	defer cancel()
 	if err := server.Shutdown(shutdownCtx); err != nil {
 		log.Printf("Error shutting down server: %v", err)
