@@ -11,3 +11,12 @@ clean:
 
 heroku: $(DOCKER_CMD)
 	heroku container:push web
+
+migrate-up:
+	./dbmate up
+
+migrate-down:
+	./dbmate down
+
+migrate-new:
+	./dbmate new $(name)

@@ -28,6 +28,7 @@ func Load(args []string) (*Config, error) {
 	fs.StringVar(&config.HTTP.Port, "port", "3000", "HTTP server port")
 	fs.DurationVar(&config.HTTP.ReadTimeout, "http-read-timeout", 5*time.Second, "HTTP server read timeout")
 	fs.DurationVar(&config.HTTP.WriteTimeout, "http-write-timeout", 10*time.Second, "HTTP server write timeout")
+	fs.DurationVar(&config.HTTP.GracefulTimeout, "http-graceful-timeout", 5*time.Second, "HTTP server graceful shutdown timeout")
 
 	// Database settings
 	fs.StringVar(&config.Database.URL, "database-url", "", "Database connection URL")
@@ -50,9 +51,10 @@ type AppConfig struct {
 }
 
 type HTTPConfig struct {
-	Port         string
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
+	Port            string
+	ReadTimeout     time.Duration
+	WriteTimeout    time.Duration
+	GracefulTimeout time.Duration
 }
 
 type DatabaseConfig struct {
