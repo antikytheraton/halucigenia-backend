@@ -1,43 +1,219 @@
-# Go Getting Started
+# Halucigenia Backend
 
-A barebones Go app, which can easily be deployed to Heroku.
+A clean, production-ready REST API for managing bookmarks.
 
-This application supports the tutorials for both the [Cedar and Fir generations](https://devcenter.heroku.com/articles/generations) of the Heroku platform. You can check them out here:
+Built with Go, Gin, PostgreSQL, and Hexagonal Architecture principles.
 
-- [Getting Started on Heroku with Go](https://devcenter.heroku.com/articles/getting-started-with-go)
-- [Getting Started on Heroku Fir with Go](https://devcenter.heroku.com/articles/getting-started-with-go-fir)
+------------------------------------------------------------------------
 
-## Deploying to Heroku
+## 🚀 Tech Stack
 
-Using resources for this example app counts towards your usage. [Delete your app](https://devcenter.heroku.com/articles/heroku-cli-commands#heroku-apps-destroy) and [database](https://devcenter.heroku.com/articles/heroku-postgresql#removing-the-add-on) as soon as you are done experimenting to control costs.
+-   Go 1.25+
+-   Gin (HTTP framework)
+-   PostgreSQL
+-   dbmate (database migrations)
+-   Docker / Docker Compose
+-   Heroku-ready deployment
 
-### Deploy on Heroku [Cedar](https://devcenter.heroku.com/articles/generations#cedar)
+------------------------------------------------------------------------
 
-By default, apps use Eco dynos if you are subscribed to Eco. Otherwise, it defaults to Basic dynos. The Eco dynos plan is shared across all Eco dynos in your account and is recommended if you plan on deploying many small apps to Heroku. Learn more about our low-cost plans [here](https://blog.heroku.com/new-low-cost-plans).
+## 🏗 Architecture
 
-Eligible students can apply for platform credits through our new [Heroku for GitHub Students program](https://blog.heroku.com/github-student-developer-program).
+This project follows a clean / hexagonal architecture:
 
-```text
-$ heroku create
-$ git push heroku main
-$ heroku open
+    internal/
+    ├── app/            # Application use cases (business logic)
+    ├── adapters/
+    │   ├── http/       # HTTP transport layer (Gin handlers)
+    │   └── postgres/   # PostgreSQL repositories
+    ├── platform/
+    │   ├── config/     # Configuration layer (env + yaml)
+    │   └── db/         # Database connection setup
+
+Flow:
+
+    HTTP → Handler → Service → Repository → PostgreSQL
+
+------------------------------------------------------------------------
+
+## 📦 Features
+
+-   Create bookmarks
+-   List bookmarks
+-   Delete bookmarks
+-   Clean separation of concerns
+-   Graceful shutdown
+-   Environment-based configuration
+-   Production-ready setup
+
+------------------------------------------------------------------------
+
+## 🗄 Database Schema
+
+### bookmarks
+
+  Column       Type        Constraints
+  ------------ ----------- ------------------------
+  id           UUID        Primary Key
+  title        TEXT        NOT NULL
+  url          TEXT        NOT NULL
+  created_at   TIMESTAMP   NOT NULL DEFAULT now()
+
+### Example SQL
+
+``` sql
+CREATE TABLE bookmarks (
+    id UUID PRIMARY KEY,
+    title TEXT NOT NULL,
+    url TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
 ```
 
-### Deploy on Heroku [Fir](https://devcenter.heroku.com/articles/generations#fir)
+------------------------------------------------------------------------
 
-By default, apps on [Fir](https://devcenter.heroku.com/articles/generations#fir) use 1X-Classic dynos. To create an app on [Fir](https://devcenter.heroku.com/articles/generations#fir) you'll need to
-[create a private space](https://devcenter.heroku.com/articles/working-with-private-spaces#create-a-private-space)
-first.
+## 🔧 Configuration
 
-```text
-$ heroku create --space <space-name>
-$ git push heroku main
-$ heroku ps:wait
-$ heroku open
+The application reads configuration in this order:
+
+1.  Environment variables
+2.  Config file (optional)
+3.  Default values
+
+### Required Environment Variables
+
+    DATABASE_URL=postgresql://user:password@host:port/dbname?sslmode=disable
+    PORT=3000
+    ENV=production
+
+On Heroku, `DATABASE_URL` is automatically provided.
+
+------------------------------------------------------------------------
+
+## 🐳 Running Locally with Docker
+
+``` bash
+docker compose up -d
 ```
 
-## Documentation
+Postgres will be available at:
 
-For more information about using Go on Heroku, see these Dev Center articles:
+    postgresql://postgres:example@localhost:5432/mypocket?sslmode=disable
 
-- [Go on Heroku](https://devcenter.heroku.com/categories/go)
+------------------------------------------------------------------------
+
+## 🧱 Database Migrations (dbmate)
+
+Create a new migration:
+
+``` bash
+make migrate-new name=create_bookmarks_table
+```
+
+Run migrations:
+
+``` bash
+make migrate-up
+```
+
+Rollback:
+
+``` bash
+make migrate-down
+```
+
+------------------------------------------------------------------------
+
+## ▶ Running the Server
+
+``` bash
+go run main.go
+```
+
+Server starts at:
+
+    http://localhost:3000
+
+------------------------------------------------------------------------
+
+## 🌐 API Endpoints
+
+### Create Bookmark
+
+    POST /bookmarks
+
+Body:
+
+``` json
+{
+  "title": "Google",
+  "url": "https://google.com"
+}
+```
+
+------------------------------------------------------------------------
+
+### List Bookmarks
+
+    GET /bookmarks
+
+------------------------------------------------------------------------
+
+### Delete Bookmark
+
+    DELETE /bookmarks/:id
+
+------------------------------------------------------------------------
+
+## 🛑 Graceful Shutdown
+
+The application listens for:
+
+-   SIGINT
+-   SIGTERM
+
+On shutdown:
+
+-   Stops accepting new requests
+-   Finishes in-flight requests
+-   Closes database connections cleanly
+
+------------------------------------------------------------------------
+
+## 🚀 Deployment (Heroku)
+
+1.  Set environment variables:
+
+```{=html}
+<!-- -->
+```
+    heroku config:set ENV=production
+
+2.  Push:
+
+```{=html}
+<!-- -->
+```
+    git push heroku main
+
+Heroku automatically provides:
+
+    DATABASE_URL
+    PORT
+
+------------------------------------------------------------------------
+
+## 🧪 Future Improvements
+
+-   Authentication (JWT)
+-   Tags
+-   Pagination
+-   Structured logging
+-   Observability (OpenTelemetry)
+-   Rate limiting
+
+------------------------------------------------------------------------
+
+## 📄 License
+
+GPL-3.0
