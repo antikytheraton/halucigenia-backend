@@ -42,13 +42,13 @@ func (h *Handler) CreateBookmark(c *gin.Context) {
 	// TODO: Get user ID from auth context
 	req.UserID = uuid.MustParse("f2ed0041-71e1-4ac9-9dc6-09537e2bf449")
 
-	err := h.Service.CreateBookmark(c.Request.Context(), &req)
+	b, err := h.Service.CreateBookmark(c.Request.Context(), &req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "bookmark created"})
+	c.JSON(http.StatusCreated, gin.H{"bookmark": b})
 }
 
 // GetBookmarks handles the GET /bookmarks?tag=

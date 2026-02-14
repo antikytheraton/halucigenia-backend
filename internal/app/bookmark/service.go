@@ -18,7 +18,7 @@ func NewService(repo bookmark.Repository) *Service {
 }
 
 // CreateBookmark creates a new bookmark for the user.
-func (s *Service) CreateBookmark(ctx context.Context, input *CreateBookmarkInput) error {
+func (s *Service) CreateBookmark(ctx context.Context, input *CreateBookmarkInput) (*bookmark.Bookmark, error) {
 	b := &bookmark.Bookmark{
 		UserID: input.UserID,
 		URL:    input.URL,

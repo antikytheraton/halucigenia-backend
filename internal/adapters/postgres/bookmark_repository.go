@@ -20,13 +20,19 @@ func NewBookmarkRepository(db *sql.DB) *BookmarkRepository {
 }
 
 // Save inserts a new bookmark into the database.
-func (r *BookmarkRepository) Save(ctx context.Context, b *bookmark.Bookmark) error {
-	_, err := r.db.ExecContext(ctx,
+func (r *BookmarkRepository) Save(ctx context.Context, b *bookmark.Bookmark) (*bookmark.Bookmark, error) {
+	var row bookmark.Bookmark
+	err := r.db.QueryRowContext(ctx,
 		`INSERT INTO bookmarks (user_id, url, title)
-	  VALUES ($1, $2, $3)`,
+	  VALUES ($1, $2, $3)
+		RETURNING id, user_id, url, title, created_at, updated_at`,
 		b.UserID, b.URL, b.Title,
-	)
-	return err
+	).Scan(&row.ID, &row.UserID, &row.URL, &row.Title, &row.CreatedAt, &row.UpdatedAt)
+	if err != nil {
+		log.Printf("failed to save bookmark: %v", err)
+		return nil, bookmark.ErrBookmarkSaveFailed
+	}
+	return &row, nil
 }
 
 // FindByID retrieves a bookmark by its ID.
