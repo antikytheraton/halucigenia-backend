@@ -29,7 +29,10 @@ func Run(args []string) int {
 
 	repo := postgres.NewBookmarkRepository(db)
 	service := bookmark_app.NewService(repo)
-	handler := bookmark_http.NewHandler(service)
+	handler := bookmark_http.NewHandler(bookmark_http.HandlerConfig{
+		Service: service,
+		Env:     c.App.Env,
+	})
 	router := bookmark_http.NewRouter(handler)
 
 	server := &http.Server{
@@ -40,6 +43,7 @@ func Run(args []string) int {
 	}
 
 	go func() {
+		log.Printf("Server is running on port %s", c.HTTP.Port)
 		if err = server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Error starting server: %v", err)
 		}
