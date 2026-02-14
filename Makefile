@@ -20,3 +20,6 @@ migrate-down:
 
 migrate-new:
 	./dbmate new $(name)
+
+migrate-status:
+	./dbmate status
