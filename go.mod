@@ -5,6 +5,7 @@ go 1.25.0
 
 require (
 	github.com/gin-gonic/gin v1.11.0
+	github.com/google/uuid v1.6.0
 	github.com/heroku/x v0.5.2
 	github.com/lib/pq v1.11.2
 	github.com/peterbourgon/ff/v3 v3.3.2

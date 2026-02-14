@@ -18,6 +18,7 @@ func NewRouter(h *Handler) *gin.Engine {
 		bookmarkAPI := v1.Group("/bookmarks")
 		bookmarkAPI.POST("", h.CreateBookmark)
 		bookmarkAPI.GET("", h.GetBookmarks)
+		bookmarkAPI.GET("/:id", h.GetBookmarkByID)
 		bookmarkAPI.DELETE("/:id", h.DeleteBookmark)
 
 		tagAPI := v1.Group("/tags")
