@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/antikytheraton/halucigenia-backend/internal/domain/bookmark"
+	domain "github.com/antikytheraton/halucigenia-backend/internal/domain/bookmark"
 	"github.com/google/uuid"
 )
 
-var _ bookmark.Repository = (*BookmarkRepository)(nil)
+var _ domain.Repository = (*BookmarkRepository)(nil)
 
 type BookmarkRepository struct {
 	db *sql.DB
@@ -20,8 +20,8 @@ func NewBookmarkRepository(db *sql.DB) *BookmarkRepository {
 }
 
 // Save inserts a new bookmark into the database.
-func (r *BookmarkRepository) Save(ctx context.Context, b *bookmark.Bookmark) (*bookmark.Bookmark, error) {
-	var row bookmark.Bookmark
+func (r *BookmarkRepository) Save(ctx context.Context, b *domain.Bookmark) (*domain.Bookmark, error) {
+	var row domain.Bookmark
 	err := r.db.QueryRowContext(ctx,
 		`INSERT INTO bookmarks (user_id, url, title)
 	  VALUES ($1, $2, $3)
@@ -30,14 +30,14 @@ func (r *BookmarkRepository) Save(ctx context.Context, b *bookmark.Bookmark) (*b
 	).Scan(&row.ID, &row.UserID, &row.URL, &row.Title, &row.CreatedAt, &row.UpdatedAt)
 	if err != nil {
 		log.Printf("failed to save bookmark: %v", err)
-		return nil, bookmark.ErrBookmarkSaveFailed
+		return nil, domain.ErrBookmarkSaveFailed
 	}
 	return &row, nil
 }
 
 // FindByID retrieves a bookmark by its ID.
-func (r *BookmarkRepository) FindByID(ctx context.Context, id uuid.UUID) (*bookmark.Bookmark, error) {
-	var b bookmark.Bookmark
+func (r *BookmarkRepository) FindByID(ctx context.Context, id uuid.UUID) (*domain.Bookmark, error) {
+	var b domain.Bookmark
 	err := r.db.QueryRowContext(ctx,
 		`
 		SELECT id, user_id, url, title, created_at, updated_at
@@ -48,7 +48,7 @@ func (r *BookmarkRepository) FindByID(ctx context.Context, id uuid.UUID) (*bookm
 	).Scan(&b.ID, &b.UserID, &b.URL, &b.Title, &b.CreatedAt, &b.UpdatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, bookmark.ErrBookmarkNotFound
+			return nil, domain.ErrBookmarkNotFound
 		}
 		return nil, err
 	}
@@ -56,9 +56,9 @@ func (r *BookmarkRepository) FindByID(ctx context.Context, id uuid.UUID) (*bookm
 }
 
 // ListByUserID retrieves all bookmarks for a given user.
-func (r *BookmarkRepository) ListByUserID(ctx context.Context, userID uuid.UUID) ([]*bookmark.Bookmark, error) {
+func (r *BookmarkRepository) ListByUserID(ctx context.Context, userID uuid.UUID) ([]*domain.Bookmark, error) {
 
-	var bookmarks []*bookmark.Bookmark
+	var bookmarks []*domain.Bookmark
 	rows, err := r.db.QueryContext(ctx,
 		`
 		SELECT id, user_id, url, title, created_at, updated_at
@@ -73,7 +73,7 @@ func (r *BookmarkRepository) ListByUserID(ctx context.Context, userID uuid.UUID)
 	defer rows.Close()
 
 	for rows.Next() {
-		var b bookmark.Bookmark
+		var b domain.Bookmark
 		rowErr := rows.Scan(&b.ID, &b.UserID, &b.URL, &b.Title, &b.CreatedAt, &b.UpdatedAt)
 		if rowErr != nil {
 			log.Printf("failed to scan bookmark: %v", rowErr)
